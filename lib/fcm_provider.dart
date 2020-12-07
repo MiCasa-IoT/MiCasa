@@ -21,11 +21,6 @@ Future<void> initNotification() async {
         print('onResume: $message');
       },
     );
-
-  firebaseMessaging.getToken().then((String token) {
-    assert(token != null);
-    print("Push Messaging token: $token");
-  });
 }
 
 Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {

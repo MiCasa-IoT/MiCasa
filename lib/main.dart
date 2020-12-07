@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:micasa_flutter/fcm_provider.dart';
+import 'package:micasa_flutter/firebase_auth.dart';
 
 void main() => runApp(MiCasa());
 
@@ -42,7 +43,15 @@ class _HomePageState extends State<HomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-
+        child: Column(
+          children: [
+            RaisedButton(
+              child: const Text("Login"),
+                onPressed: () async {
+                  loginUI();
+                }),
+          ],
+        ),
       ),
     );
   }
