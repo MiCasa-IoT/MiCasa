@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
-import '../notification.dart';
+import 'package:micasa/provider/user_provider.dart';
+import '../provider/notification_provider.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -12,10 +12,10 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    RemoteNotificationsHelper().initNotification();
+    RemoteNotificationsProvider().initNotification();
     Firebase.initializeApp().whenComplete(() {
       Future.delayed(const Duration(seconds: 3))
-          .then((value) => handleTimeout());
+          .then((value) => UserProvider().checkUser(context));
     });
   }
 
@@ -26,9 +26,5 @@ class _SplashPageState extends State<SplashPage> {
         child: const CircularProgressIndicator(),
       ),
     );
-  }
-
-  void handleTimeout() {
-    Navigator.of(context).pushReplacementNamed("/login");
   }
 }

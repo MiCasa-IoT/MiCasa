@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:micasa/widget/home.dart';
+import 'package:micasa/provider/user_provider.dart';
 
 class LogInPage extends StatefulWidget {
   static String tag = 'login-page';
@@ -10,13 +9,7 @@ class LogInPage extends StatefulWidget {
 }
 
 class _LogInPageState extends State<LogInPage> {
-  // Create a global key that will uniquely identify the Form widget and allow
-  // us to validate the form
-  //
-  // Note: This is a GlobalKey<FormState>, not a GlobalKey<MyCustomFormState>!
   final _formKey = GlobalKey<FormState>();
-
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final TextEditingController emailController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
 
@@ -97,9 +90,9 @@ class _LogInPageState extends State<LogInPage> {
         ),
         onPressed: () {
           if (_formKey.currentState.validate()) {
-            signIn(emailController.text, passwordController.text)
-                .then((uid) => {Navigator.of(context).pushNamed('/home')})
-                .catchError((error) => {processError(error)});
+            UserProvider().signIn(context, emailController.text, passwordController.text);
+            emailController.clear();
+            passwordController.clear();
           }
         },
         child: Text('Log In', style: TextStyle(color: Colors.white)),
@@ -153,12 +146,6 @@ class _LogInPageState extends State<LogInPage> {
             ),
           ),
         ));
-  }
-
-  Future<String> signIn(final String email, final String password) async {
-    UserCredential users = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-    return users.user.uid;
   }
 
   void processError(final PlatformException error) {

@@ -1,34 +1,26 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:micasa/provider/user_provider.dart';
+import 'package:uuid/uuid.dart';
+
 
 class RegisterPage extends StatefulWidget {
   static String tag = 'register-page';
   @override
-  _RegisterPageState createState() => new _RegisterPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // Create a global key that will uniquely identify the Form widget and allow
-  // us to validate the form
-  //
-  // Note: This is a GlobalKey<FormState>, not a GlobalKey<MyCustomFormState>!
   final _formKey = GlobalKey<FormState>();
-  final emailTextEditController = new TextEditingController();
-  final firstNameTextEditController = new TextEditingController();
-  final lastNameTextEditController = new TextEditingController();
-  final passwordTextEditController = new TextEditingController();
-  final confirmPasswordTextEditController = new TextEditingController();
+  final _emailTextEditController = TextEditingController();
+  final _passwordTextEditController = TextEditingController();
+  final _confirmPasswordTextEditController = TextEditingController();
 
   final FocusNode _emailFocus = FocusNode();
-  final FocusNode _firstNameFocus = FocusNode();
-  final FocusNode _lastNameFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _confirmPasswordFocus = FocusNode();
 
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
+  String _uuid = '';
   String _errorMessage = '';
 
   void processError(final PlatformException error) {
@@ -37,8 +29,17 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
+  void setUUID() {
+    setState(() {
+      _uuid = Uuid().v4();
+    });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    setUUID();
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -73,68 +74,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         }
                         return null;
                       },
-                      controller: emailTextEditController,
+                      controller: _emailTextEditController,
                       keyboardType: TextInputType.emailAddress,
                       autofocus: true,
                       textInputAction: TextInputAction.next,
                       focusNode: _emailFocus,
                       onFieldSubmitted: (term) {
-                        FocusScope.of(context).requestFocus(_firstNameFocus);
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Email',
-                        contentPadding:
-                        EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32.0)),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter your first name.';
-                        }
-                        return null;
-                      },
-                      controller: firstNameTextEditController,
-                      keyboardType: TextInputType.text,
-                      autofocus: false,
-                      textInputAction: TextInputAction.next,
-                      focusNode: _firstNameFocus,
-                      onFieldSubmitted: (term) {
-                        FocusScope.of(context).requestFocus(_lastNameFocus);
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'First Name',
-                        contentPadding:
-                        EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32.0)),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter your last name.';
-                        }
-                        return null;
-                      },
-                      controller: lastNameTextEditController,
-                      keyboardType: TextInputType.text,
-                      autofocus: false,
-                      textInputAction: TextInputAction.next,
-                      focusNode: _lastNameFocus,
-                      onFieldSubmitted: (term) {
                         FocusScope.of(context).requestFocus(_passwordFocus);
                       },
                       decoration: InputDecoration(
-                        hintText: 'Last Name',
+                        hintText: 'Email',
                         contentPadding:
                         EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                         border: OutlineInputBorder(
@@ -153,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                       autofocus: false,
                       obscureText: true,
-                      controller: passwordTextEditController,
+                      controller: _passwordTextEditController,
                       textInputAction: TextInputAction.next,
                       focusNode: _passwordFocus,
                       onFieldSubmitted: (term) {
@@ -174,12 +123,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: TextFormField(
                       autofocus: false,
                       obscureText: true,
-                      controller: confirmPasswordTextEditController,
+                      controller: _confirmPasswordTextEditController,
                       focusNode: _confirmPasswordFocus,
                       textInputAction: TextInputAction.done,
                       validator: (value) {
-                        if (passwordTextEditController.text.length > 8 &&
-                            passwordTextEditController.text != value) {
+                        if (_passwordTextEditController.text.length > 8 &&
+                            _passwordTextEditController.text != value) {
                           return 'Passwords do not match.';
                         }
                         return null;
@@ -194,34 +143,31 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 10.0),
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      'UUID: $_uuid',
+                      style: TextStyle(fontSize: 16.0, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16.0),
                     child: RaisedButton(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
-                          _firebaseAuth
-                              .createUserWithEmailAndPassword(
-                              email: emailTextEditController.text,
-                              password: passwordTextEditController.text)
-                              .then((onValue) {
-                            FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(onValue.user.uid)
-                                .set({
-                              'firstName': firstNameTextEditController.text,
-                              'lastName': lastNameTextEditController.text,
-                            }).then((userInfoValue) {
-                              Navigator.of(context).pushNamed('/home');
-                            });
-                          }).catchError((onError) {
-                            processError(onError);
-                          });
+                          UserProvider().userRegistration(
+                            context,
+                            _emailTextEditController.text,
+                            _passwordTextEditController.text,
+                            _uuid
+                          );
                         }
                       },
                       padding: EdgeInsets.all(12),
-                      color: Colors.lightGreen,
+                      color: Colors.teal,
                       child: Text('Sign Up'.toUpperCase(),
                           style: TextStyle(color: Colors.white)),
                     ),

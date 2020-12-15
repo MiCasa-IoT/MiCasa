@@ -1,7 +1,7 @@
-import 'package:micasa/widget/home.dart';
-import 'package:micasa/widget/login.dart';
-import 'package:micasa/widget/register.dart';
-import 'package:micasa/widget/splash.dart';
+import 'package:micasa/widget/home_page.dart';
+import 'package:micasa/widget/login_page.dart';
+import 'package:micasa/widget/register_page.dart';
+import 'package:micasa/widget/splash_page.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MiCasa());

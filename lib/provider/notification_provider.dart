@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-class RemoteNotificationsHelper {
+class RemoteNotificationsProvider {
   FirebaseMessaging firebaseMessaging;
 
   Future<void> initNotification() async {
