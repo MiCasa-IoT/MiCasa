@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:micasa/provider/bluetooth_provider.dart';
 import 'package:micasa/provider/user_provider.dart';
@@ -10,11 +11,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Future<String> _name;
+  bool _isAdvertising = false;
 
   @override
   void initState() {
     super.initState();
     _name = UserProvider().getUser();
+    BluetoothProvider().initBeacon();
+    BluetoothProvider().broadcast().getAdvertisingStateChange().listen((event) {
+      setState(() {
+        _isAdvertising = event;
+      });
+    });
   }
 
   @override
@@ -57,29 +65,10 @@ class _HomePageState extends State<HomePage> {
 
     final advertisingStatus = Padding(
       padding: EdgeInsets.only(top: 32.0),
-      child: FutureBuilder(
-        future: BluetoothProvider().initBluetooth(),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-              break;
-            case ConnectionState.active:
-            case ConnectionState.waiting:
-              return Text(
-                'Advertising Status: Waiting...',
-                style: TextStyle(fontSize: 16.0, color: Colors.white),
-              );
-            case ConnectionState.done:
-              if (snapshot.hasData) {
-                return Text(
-                  'Advertising Status: ${snapshot.data.toString()}',
-                  style: TextStyle(fontSize: 16.0, color: Colors.white),
-                );
-              }
-          }
-          return null;
-        },
-      ),
+      child: Text(
+        'Advertising: $_isAdvertising',
+        style: TextStyle(fontSize: 16.0, color: Colors.white),
+      )
     );
 
     final uuid = Padding(

@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:micasa/provider/user_provider.dart';
 
 class BluetoothProvider {
   final BeaconBroadcast _broadcast = BeaconBroadcast();
 
-  Future<bool> initBluetooth() async {
+  Future<bool> initBeacon() async {
     bool isAdvertising = await _broadcast.isAdvertising();
     BeaconStatus transmissionSupportStatus = await _broadcast.checkTransmissionSupported();
     String uuid = await UserProvider().getUUID();
@@ -20,5 +22,9 @@ class BluetoothProvider {
           .start();
     }
     return isAdvertising;
+  }
+
+  BeaconBroadcast broadcast() {
+    return _broadcast;
   }
 }

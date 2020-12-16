@@ -21,7 +21,9 @@ class UserProvider {
     User user = _auth.currentUser;
     DocumentSnapshot snapshot = await _firestore.collection('users').doc(user.uid).get();
 
-    return snapshot.data().containsKey('uuid') ? snapshot.data()['uuid'] : null;
+    return snapshot.data().containsKey('uuid')
+        ? snapshot.data()['uuid']
+        : null;
   }
 
   Future<String> getUser() async {
