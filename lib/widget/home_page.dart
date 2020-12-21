@@ -18,9 +18,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _name = UserProvider().getUser();
     BluetoothProvider().initBeacon();
-    BluetoothProvider().broadcast().getAdvertisingStateChange().listen((event) {
+    BluetoothProvider().broadcast().getAdvertisingStateChange().listen((status) {
       setState(() {
-        _isAdvertising = event;
+        _isAdvertising = status;
       });
     });
   }

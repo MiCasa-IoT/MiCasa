@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:micasa/widget/alert.dart';
 
@@ -7,7 +8,7 @@ class UserProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void checkUser(final BuildContext context) async {
+  void checkUser(BuildContext context) async {
     final _currentUser = _auth.currentUser;
 
     if (_currentUser != null) {
@@ -33,7 +34,8 @@ class UserProvider {
     return snapshot.data().containsKey('uuid') ? user.email : null;
   }
 
-  Future userRegistration(final BuildContext context, final String _email, final String _password, final String _uuid) async {
+  Future userRegistration(BuildContext context, String _email, String _password, String _uuid) async {
+    String _deviceToken = await FirebaseMessaging().getToken();
     try {
       UserCredential credential = await _auth
           .createUserWithEmailAndPassword(
@@ -45,6 +47,7 @@ class UserProvider {
           .doc(credential.user.uid)
           .set({
         'uuid': _uuid,
+        'token': _deviceToken,
       }).then((userInfoValue) {
         Navigator.of(context).pushNamed('/home');
       });
@@ -53,7 +56,7 @@ class UserProvider {
     }
   }
 
-  void signIn(final BuildContext context, final String _email, final String _password) async {
+  void signIn(BuildContext context, String _email, String _password) async {
     try {
       await _auth.signInWithEmailAndPassword(
           email: _email, password: _password);

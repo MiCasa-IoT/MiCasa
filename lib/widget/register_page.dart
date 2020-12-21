@@ -21,6 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final FocusNode _confirmPasswordFocus = FocusNode();
 
   String _uuid = '';
+  String _deviceToken = '';
   String _errorMessage = '';
 
   void processError(final PlatformException error) {
@@ -34,8 +35,6 @@ class _RegisterPageState extends State<RegisterPage> {
       _uuid = Uuid().v4();
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             context,
                             _emailTextEditController.text,
                             _passwordTextEditController.text,
-                            _uuid
+                            _uuid,
                           );
                         }
                       },
@@ -184,7 +183,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ))
                 ],
-              ))),
+              )
+          )
+      ),
     );
   }
 }
