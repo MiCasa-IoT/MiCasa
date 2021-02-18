@@ -1,4 +1,4 @@
-package jp.ac.maizuruct.micasa.micasa_flutter
+package jp.ac.maizuruct.micasa
 
 import io.flutter.app.FlutterApplication
 import io.flutter.plugin.common.PluginRegistry
