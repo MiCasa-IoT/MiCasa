@@ -7,8 +7,13 @@ class RemoteNotificationsProvider {
 
   Future<void> initNotification() async {
     firebaseMessaging = FirebaseMessaging()
-      ..requestNotificationPermissions()
-      ..onIosSettingsRegistered.listen((IosNotificationSettings settings) {})
+      ..requestNotificationPermissions(
+          const IosNotificationSettings(sound: true, alert: true, badge: true)
+      )
+      ..onIosSettingsRegistered.listen(
+              (IosNotificationSettings settings) {
+                print("Settings registered: $settings");
+              })
       ..configure(
         onMessage: (Map<String, dynamic> message) async {
           print('onMessage: $message');
